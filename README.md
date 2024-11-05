@@ -1,27 +1,42 @@
-# ZoomScrollBugCustomToolbar
+# Demonstration: Bug on Changing Page during Zoom
 
-This project was generated with [Angular CLI](https://github.com/angular/angular-cli) version 18.2.11.
+This Repo includes a minimal reproducible example on a potential bug in the usage of the [ngx-extended-pdf-viewer](https://www.npmjs.com/package/ngx-extended-pdf-viewer) library.
 
-## Development server
+## Precondition
+This Bug only appears when using a Custom Toolbar. The Bug doesn't appear with the default toolbar that comes with the pdf viewer.
 
-Run `ng serve` for a dev server. Navigate to `http://localhost:4200/`. The application will automatically reload if you change any of the source files.
+## Reproduction Steps
 
-## Code scaffolding
+1. Start the App with `npm start`
+2. Go to `http://localhost:4200`
+3. When the PDF is loaded, scroll to the next page but so that the previous page is still slighlty visible in the pdf preview
+4. Now Click on the `+` Button to Zoom in
 
-Run `ng generate component component-name` to generate a new component. You can also use `ng generate directive|pipe|service|class|guard|interface|enum|module`.
+## Expected Behaviour
+The PDF Viewer should show the same page as before but with increased zoom.
 
-## Build
+## Actual Behaviour
+The PDF Viewer jumps to the previous page and increases the zoom.
 
-Run `ng build` to build the project. The build artifacts will be stored in the `dist/` directory.
+## Possible Reasons and Solutions
 
-## Running unit tests
+If I change the zoom level of the PDFViewer via the `zoom` input this causes the `pageChange` output event to emit with the previous page, but only if the previous page is still slighlty in the viewport.
 
-Run `ng test` to execute the unit tests via [Karma](https://karma-runner.github.io).
+It might also just be a timing issue as I could workaround this behaviour by reading the page of the pdf viewer via the service with a minimal delay like this:
 
-## Running end-to-end tests
+```ts
+ // Called on every emittion of the `pageChange` output
+ onPageChange(pageNumber: number) {
+    console.debug("NgxExtendedPdfViewer: PageChange ", pageNumber)
+     // Workaround
+     setTimeout(() => {
+      const pageFromSerivce = this.pdfService.currentPageIndex();
+      if(pageFromSerivce != null) {
+        this.pdfCurrentPage.set(pageFromSerivce + 1)
+       }
+     }, 0)
+  }
 
-Run `ng e2e` to execute the end-to-end tests via a platform of your choice. To use this command, you need to first add a package that implements end-to-end testing capabilities.
+```
 
-## Further help
-
-To get more help on the Angular CLI use `ng help` or go check out the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
+I think a solution might be to suppress the potential unintended output emittion of the `pageChange` output on a `zoom` change.

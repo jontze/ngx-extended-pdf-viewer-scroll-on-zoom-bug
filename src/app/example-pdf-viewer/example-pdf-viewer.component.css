@@ -1,0 +1,24 @@
+* {
+    box-sizing: border-box;
+}
+
+.custom-toolbar {
+    background-color: #F5F5F5;
+    display: flex;
+    flex-direction: row;
+    justify-content: center;
+    align-items: center;
+    gap: 24px;
+    width: 100%;
+    /* Shadow here */
+    border-radius: 15px;
+    padding: 24px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0 ,0.1);
+}
+
+
+.tools {
+    display: flex;
+    flex-direction: row;
+    gap: 8px;
+}
