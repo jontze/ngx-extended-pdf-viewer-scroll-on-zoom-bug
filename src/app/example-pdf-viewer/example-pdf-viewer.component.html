@@ -1,7 +1,7 @@
 <div class="custom-toolbar">
   <div class="tools">
     <button (click)="onPrevPageClicked()">Prev</button>
-    <span>{{ pdfCurrentPage() }} </span>
+    <span>{{ pdfCurrentPage }} </span>
     <button (click)="onNextPageClicked()">Next</button>
   </div>
 
@@ -27,8 +27,8 @@
 </small>
 <ngx-extended-pdf-viewer
   src="/assets/pdfs/Bootstrap-vs-Material-Design-vs-Prime-vs-Tailwind.pdf"
-  [zoom]="pdfSetZoom()"
-  [page]="pdfCurrentPage()"
+  [zoom]="pdfSetZoom"
+  [page]="pdfCurrentPage"
   (pageChange)="onPageChange($event)"
   (pdfLoaded)="onPdfLoaded($event)"
   (currentZoomFactor)="onCurrentZoomFactorChange($event)"

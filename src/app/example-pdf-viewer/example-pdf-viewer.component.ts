@@ -1,4 +1,4 @@
-import { Component, ChangeDetectionStrategy, signal } from '@angular/core';
+import { Component, ChangeDetectionStrategy, signal, ChangeDetectorRef } from '@angular/core';
 import {
   NgxExtendedPdfViewerModule,
   NgxExtendedPdfViewerService,
@@ -13,22 +13,22 @@ import {
   standalone: true,
   imports: [NgxExtendedPdfViewerModule],
   providers: [NgxExtendedPdfViewerService],
-  changeDetection: ChangeDetectionStrategy.OnPush,
+  // changeDetection: ChangeDetectionStrategy.OnPush,
 })
 export class ExamplePdfViewerComponent {
   constructor(private readonly pdfService: NgxExtendedPdfViewerService) {}
 
-  pdfLoaded = signal(false);
-  pdfPagesCount = signal(0);
-  pdfSetZoom = signal<string | number>('page-width');
+  pdfLoaded = false;
+  pdfPagesCount = 0;
+  pdfSetZoom: string | number = 'page-width';
   pdfReportedZoom = 100;
-  pdfCurrentPage = signal(1);
+  pdfCurrentPage = 1;
 
   // START: NgxExtendedPdfViewer Callbacks
   onPdfLoaded(event: PdfLoadedEvent) {
     console.debug("NgxExtendedPdfViewer: PdfLoaded ", event)
-    this.pdfPagesCount.set(event.pagesCount);
-    this.pdfLoaded.set(true);
+    this.pdfPagesCount = event.pagesCount;
+    this.pdfLoaded = true;
   }
   onCurrentZoomFactorChange(zoom: number) {
     console.debug("NgxExtendedPdfViewer: ZoomFactorChange ", zoom)
@@ -36,7 +36,7 @@ export class ExamplePdfViewerComponent {
   }
   onPageChange(pageNumber: number) {
     console.debug("NgxExtendedPdfViewer: PageChange ", pageNumber)
-    this.pdfCurrentPage.set(pageNumber);
+    this.pdfCurrentPage = pageNumber;
     /**
      * Workaround:
      * setTimeout(() => {
@@ -51,16 +51,16 @@ export class ExamplePdfViewerComponent {
 
   // START: Custom Toolbar Callbacks
   onZoomOutClicked() {
-    this.pdfSetZoom.set(this.pdfReportedZoom - 15);
+    this.pdfSetZoom = this.pdfReportedZoom - 15;
   }
   onZoomInClicked() {
-    this.pdfSetZoom.set(this.pdfReportedZoom + 15);
+    this.pdfSetZoom = this.pdfReportedZoom + 15;
   }
   onPrevPageClicked() {
-    this.pdfCurrentPage.update((curr) => curr - 1);
+    this.pdfCurrentPage -= 1;
   }
   onNextPageClicked() {
-    this.pdfCurrentPage.update((curr) => curr + 1);
+    this.pdfCurrentPage += 1;
   }
   // END: Custom Toolbar Callbacks
 }
